@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"    
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head> 
+    </h:head>
+    <h:body>
+
+        <ui:composition template="/master/master.xhtml">
+
+            <ui:define name="datos">
+
+                <p:panel header="EDICION DE VENTAS POR BOLETA" >
+
+                    <h:form id="frm11">
+                        <p:growl id="growl" showDetail="true"/>
+                        <p:fieldset id="fielset"  legend="Datos de la Venta" style="margin-top:1px">
+                            <h:panelGrid id="pnlg1" columns="1" cellpadding="5">
+                                <h:panelGrid id="pnlgextra" columns="2">
+                                    <h:outputText value="CODIGO DE VENTA" />
+                                    <p:inputText value="#{managedBeanVenta.codigo_venta}" />
+                                    <p:commandButton value="BUSCAR" actionListener="#{managedBeanVenta.buscar_venta(managedBeanVenta.codigo_venta)}" onstart="PF('cargando_').show();" oncomplete="PF('cargando_').hide();" update=":frm11"/>
+                                </h:panelGrid>
+                                <p:separator/>
+                                <h:panelGrid columns="2">
+                                    <h:panelGrid rendered="#{managedBeanVenta.venta.idVenta eq null ? 'false':'true'}" id="pnl_datos_" columns="2" cellpadding="5">
+                                        <h:outputText value="Fecha: " />
+
+                                        <p:calendar value="#{managedBeanVenta.venta.fechaVenta}" pattern="dd/MM/yyyy" locale="es" />
+
+
+
+                                        <h:outputText value="COD VENTA" />
+                                        <h:outputText value="#{managedBeanVenta.venta.idVenta}" />
+                                        <h:outputText value="Estado de Venta :"/>
+                                        <p:selectOneMenu value="#{managedBeanVenta.venta.estadoVenta}" effect="drop" style="width:325px" converter="estadoventaConverter" >
+                                            <f:selectItems  value="#{managedBeanEstadoVenta.estadoventaItems}"/>
+                                        </p:selectOneMenu>
+
+                                        <h:outputText value="Tienda:" />
+                                        <h:outputText value="#{managedBeanVenta.venta.tienda.nombreTienda}" />
+
+                                        <h:outputText value="Cliente:"/>
+                                        <h:outputText value="#{managedBeanVenta.venta.cliente.nombreCliente}"/>
+                                        <h:outputText value="Obs:"/>
+                                        <p:inputText value="#{managedBeanVenta.venta.observaciones}"/>
+                                        <p:commandButton value="AGREGAR PRODUCTO" actionListener="#{managedBeanVenta.preparaNewDetalle()}" onstart="PF('cargando_').show();" oncomplete="PF('cargando_').hide(); PF('dlg_02').show();" update=":frm_agregar_producto:datos_"/>
+                                    </h:panelGrid>
+
+                                    <p:commandLink title="Dar Click para Editar" actionListener="#{managedBeanVenta.editar(managedBeanVenta.venta)}" update=":frm11" >
+                                        <h:graphicImage width="135 px" height="100 px" value="${pageContext.request.contextPath}/images/guardar.png" alt="" title="" style="border-width:0px;"/>
+                                    </p:commandLink>
+
+                                </h:panelGrid>
+
+
+
+
+
+                            </h:panelGrid>
+
+                            <p:dataTable var="item" value="#{managedBeanVenta.traer_detalles_venta(managedBeanVenta.venta)}" id="detalleslist" >
+
+                                <f:facet name="header">
+                                    Productos vendidos
+                                </f:facet>
+
+                                <p:column headerText="Nombre" style="width:200px">
+
+                                    <h:outputText value="#{item.producto.nombreProducto}" />
+
+                                </p:column>
+
+                                <p:column headerText="Cant." style="width:17px;text-align: left;">
+
+                                    <h:outputText value="#{item.cantidad}" />
+
+
+
+                                </p:column>
+
+                                <p:column headerText="Precio" style="width:17px;text-align: left;">
+
+                                    <h:outputText value="#{item.precioVenta}" />
+
+                                </p:column>
+
+
+
+                                <p:column headerText="Sub.Total" style="width:17px;text-align: left;">
+
+                                    <h:outputText value="#{item.subTotal}" />
+
+                                </p:column>
+
+                                <p:column headerText="" style="width:25px;text-align: center;">
+
+                                    <p:commandButton style="font-size: 9px;" value="ELIMINAR" actionListener="#{managedBeanVenta.selecciona_detalle_sacar(item)}" onstart="PF('cargando_').show();" oncomplete="PF('cargando_').hide(); PF('dlgInformacion').show();"  update=":frm_eliminar_producto:datos_"/>
+
+                                </p:column>
+
+
+                                <f:facet name="footer">
+                                    La cantidad a pagar es : #{managedBeanVenta.venta.totalVenta} SOLES.
+                                </f:facet>
+                            </p:dataTable>
+
+                        </p:fieldset>
+                        <br />
+                        <center >
+                            <h:panelGrid id="pnlg112" columns="3" >
+
+                                <h:commandLink action="#{managedBeanReportes.reporte_venta(managedBeanVenta.venta)}">
+
+                                    <p:graphicImage width="120 px" height="120 px" value="/images/imprimir3.jpg" />
+                                </h:commandLink>
+
+
+
+                                <h:commandLink  action="#{managedBeanVenta.Volver_Venta}"  >
+                                    <p:graphicImage  value="/images/inicio1.jpg" />
+                                </h:commandLink>
+
+
+                            </h:panelGrid>
+                        </center>
+                    </h:form>
+
+                    <h:form id="frm_eliminar_producto">
+
+                        <p:dialog width="350px;" id="dialog_01" header="IMPORTANTE" widgetVar="dlgInformacion" showEffect="fade" hideEffect="fade" modal="true" height="250px;">  
+                            <h:panelGrid id="datos_" columns="1" >
+
+                                <h:outputText value="IMPORTANTE, SE VA A PROCEDER A REINGRESAR EL STOCK EN EL ALMACEN"  />
+                                <h:panelGrid  columns="2"  >
+
+
+                                    <h:outputText value="PRODUCTO"  />
+                                    <h:outputText value="#{managedBeanVenta.detalle_venta_Producto.producto.nombreProducto}"  />
+                                    <h:outputText value="PV."  />
+                                    <h:outputText value="#{managedBeanVenta.detalle_venta_Producto.precioVenta}"  />
+                                    <h:outputText value="CANTIDAD PRODUCTOS"  />
+                                    <h:outputText value="#{managedBeanVenta.detalle_venta_Producto.cantidad}"  />
+                                    <h:outputText value="SUBTOTAL"  />
+                                    <h:outputText value="#{managedBeanVenta.detalle_venta_Producto.subTotal}"  />
+
+
+
+
+                                </h:panelGrid>
+                                <p:separator />
+                                <p:commandButton value="PROCEDER CON ELIMINACION" actionListener="#{managedBeanVenta.eliminar_detalle_venta_(managedBeanVenta.detalle_venta_Producto)}" onstart="PF('cargando_').show();" oncomplete="PF('cargando_').hide(); PF('dlgInformacion').hide();" update=":frm11"/>
+
+
+                            </h:panelGrid>
+
+                            
+                        </p:dialog>  
+
+                    </h:form>
+                    
+                    
+                    <h:form id="frm_agregar_producto">
+
+                        <p:dialog width="350px;" id="dialog_02" header="IMPORTANTE" widgetVar="dlg_02" showEffect="fade" hideEffect="fade" modal="true" height="250px;">  
+                            <h:panelGrid id="datos_" columns="1" >
+
+                                <h:panelGrid  columns="2"  >
+
+
+                                  <h:outputText value="PRODUCTO : "/>
+
+                                <p:autoComplete id="auroxcomplete"
+                                                value="#{managedBeanVenta.detalle_venta_Producto.producto}"
+                                                completeMethod="#{managedBeanVenta.completar_filtrado_Producto}"
+                                                var="item_Producto" itemLabel="#{item_Producto.nombreProducto}"
+                                                itemValue="#{item_Producto}"
+                                                minQueryLength="3"
+                                                converter="ProductoConverter" 
+                                                size="42" 
+
+                                                >
+
+                                   
+                                </p:autoComplete>
+                               
+
+                                <h:outputText value="Cantidad"/>
+                                <p:inputText id="i1npss" size="42" value="#{managedBeanVenta.detalle_venta_Producto.cantidad}"/>
+                                
+
+
+                                <h:outputText value="Precio de venta"/>
+                                <p:inputText id="txtinpPrecio" style="color: red;" size="42" value="#{managedBeanVenta.detalle_venta_Producto.precioVenta}"/>
+                                <h:outputText value=""/>
+
+
+                                </h:panelGrid>
+                                <p:separator />
+                                <p:commandButton value="PROCEDER CON REGISTRO" actionListener="#{managedBeanVenta.agrega_detalle_directo()}"  update=":frm11 :frm_agregar_producto"/>
+
+
+                            </h:panelGrid>
+
+                            
+                        </p:dialog>  
+
+                    </h:form>
+
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+</html>

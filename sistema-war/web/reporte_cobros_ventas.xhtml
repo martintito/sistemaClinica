@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"    
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head> 
+    </h:head>
+    <h:body>
+
+        <ui:composition template="/master/master.xhtml">
+
+            <ui:define name="datos">
+
+
+
+
+
+                <h:form id="frmPrincipal">
+                    <p:growl id="growl" showDetail="true"/>
+                    <p:panel header="M&oacute;dulo de Ventas - Cobros de Ventas al Crédito" >
+
+
+
+                        <h:panelGrid columns="1" id="grid_principal_cobros" style="width: 100%;">
+                            <h:panelGrid columns="2">
+                                <h:outputText value="FECHA DE INICIO" />
+                                <p:calendar effect="slide" locale="es" value="#{managedBeanPagoVentaCredito.fecha_inicio}" pattern="dd/MM/yyyy"/>
+
+                                <h:outputText value="FECHA DE FIN" />
+                                <p:calendar effect="slide" locale="es" value="#{managedBeanPagoVentaCredito.fecha_fin}" pattern="dd/MM/yyyy"/>
+                            </h:panelGrid>
+                            <p:separator />
+                            <p:commandButton value="GENERAR REPORTE" actionListener="#{managedBeanPagoVentaCredito.filtrar_lista()}" update=":frmPrincipal:tabla"/>
+
+                            <p:separator />
+
+                            <p:dataTable id="tabla"   var="item" value="#{managedBeanPagoVentaCredito.lista}" style="width: 100%; margin-top: 20px;" >
+                                <f:facet name="header">
+                                    BOLETAS
+                                </f:facet>
+
+                                <p:column  headerText="FECHA">
+
+                                    <h:outputText value="#{item.fechaIngreso}">
+                                        <f:convertDateTime pattern="EEEE dd MMMM yyyy" />
+                                    </h:outputText>
+
+                                </p:column>
+
+                                <p:column headerText="CLIENTE" filterBy="#{item.venta.cliente.nombreCliente}" filterMatchMode="contains">                                   
+                                    <h:outputText value="#{item.venta.cliente.nombreCliente}" />
+                                </p:column>
+                                <p:column headerText="CANTIDAD PAGO">
+                                    <h:outputText value="#{item.cantidad}" />
+                                </p:column>
+
+
+                                <p:column headerText="OBS">
+                                    <h:outputText value="#{item.observaciones}" />
+                                </p:column>
+                            </p:dataTable>  
+
+
+                        </h:panelGrid>
+                        <p:separator />
+                        <center>
+                            <h:commandLink  action="#{managedBeanPagoVentaCredito.Volver_CobroVentas}"  >
+                                <p:graphicImage  value="images/inicio1.jpg" />
+                            </h:commandLink></center>
+
+                    </p:panel>
+                </h:form>
+
+
+
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+</html>
